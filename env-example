@@ -5,4 +5,4 @@ DB_HOST=your db server ip address
 DIALECT=your db of preference(mine is sql)
 HOST=your app server ip address
 PORT=your port
-SECRET=NeverShareYourSecret
+SECRET=your secret word of choice

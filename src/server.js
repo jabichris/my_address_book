@@ -52,7 +52,16 @@ const init = async () => {
     verifyOptions: { ignoreExpiration: false },
   })
 
-  server.auth.default('jwt')
+  server.auth.default('jwt');
+//   server.ext('onPreResponse', (request, h) => {
+//     const response = request.response;
+
+//     if (response.isBoom && response.output.statusCode === 401) {
+//         return h.redirect('/login');
+//     }
+
+//     return h.continue;
+// });
   server.views(
   //   {
   //   engines:{
@@ -74,7 +83,6 @@ const init = async () => {
     })
     .forEach((file) => {
       const route = require(path.join(__dirname, file.replace('src', '')))
-      console.log(route)
       server.route(route)
     })
 

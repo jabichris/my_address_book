@@ -55,7 +55,7 @@ const registerViewHandler = (request, h) => {
  }
 module.exports = [{
   method: 'POST',
-  path: '/register-form',
+  path: '/api/v1/users/register',
   config: {
     auth: false,
   },

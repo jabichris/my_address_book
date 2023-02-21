@@ -2,7 +2,9 @@
 <html>   
 <head>  
 <meta name="viewport" content="width=device-width, initial-scale=1">  
-<title> Address Book </title>  
+<title> Address Book </title> 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.0/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.0/dist/sweetalert2.all.min.js"></script> 
 <style>   
 Body {  
   font-family: Calibri, Helvetica, sans-serif;  
@@ -50,16 +52,105 @@ button {
 <body>    
     <center> <h1> Address Book </h1> </center>   
     <center> <h3> Login here </h3> </center>
-    <form action="login" method="POST">  
+    <form action="login" method="POST" id="login">  
         <div class="container">   
-            <label>Username : </label>   
-            <input type="text" placeholder="Enter Username" name="username" required>  
+            <label>Email : </label>   
+            <input type="text" placeholder="Enter your email" name="email" required>  
             <label>Password : </label>   
-            <input type="password" placeholder="Enter Password" name="password" required>  
+            <input type="password" placeholder="Enter your password" name="password" id="password" required>  
             <button type="submit">Login</button>   
+            <input type="checkbox" onclick="viewPassword()" id="myInput">Show Password 
             <button type="button" class="cancelbtn"> Cancel</button>   
             Don't have an account <a href="/register"> register here </a>   
         </div>   
     </form>     
+    <script>
+const viewPassword = () => {
+  var x = document.getElementById("password");
+  if (x.type === "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+}
+document.querySelector('#login').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const formData = new FormData(event.target);
+  const formDataJson = JSON.stringify(Object.fromEntries(formData.entries())); // convert the FormData to a JSON object
+
+  // Use an AJAX request to send the form data to the Hapi.js server
+  fetch('/api/v1/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json' // set the Content-Type header to application/json
+    },
+    body: formDataJson
+  }).then(res => {
+    if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+  return res.json(); // this returns a Promise that resolves to a JSON object
+}).then(data => {
+const { token } = data
+if (data.message === 'Login successful') {
+    console.log('here',token)
+      // Handle successful data
+        // store the token in local storage or a cookie
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'You loggedin  successful!'
+       
+    });
+
+    //console.log(">>>",sessionStorage.setItem("token", token))
+     // redirect to the welcome page
+     //console.log("token value:", token);
+     //sessionStorage.setItem("token", token);
+fetch('/welcome', {
+ method: 'GET',
+  headers: {
+    'Authorization':  `Bearer ${token}`,
+  },
+})
+.then(response => {
+  if (response.ok) {
+        sessionStorage.setItem("token", token);
+    return response.text();
+    
+  } else {
+    throw new Error('Request failed.');
+    // handle error
+    //return "Error happened"
+  }
+}).then(data => {
+  // display the protected page with the response data
+  document.body.innerHTML = data;
+   history.pushState(null, '', '/welcome');
+  //window.location.href = '/welcome';
+})
+.catch(error => {
+  // handle error
+    console.error("error>>>",error)
+
+});
+    } else {
+       return Swal.fire({
+      icon: 'warning',
+      title: 'Failure!',
+      text: `Your request failed due to ${response.statusText}!`
+    });
+    }     
+  }
+  ).catch(function(error) {
+  return Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: 'There was an error with your request.'
+    });    
+  });
+});
+</script>  
 </body>     
 </html>

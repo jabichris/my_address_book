@@ -7,55 +7,57 @@ const createToken = require('../utils/token')
 
 const { User } = db
 
-const loginHandler = (request, h) => {
+const loginHandlerView = (request, h) => {
   return h.view('login')
 }
 const unfoundHandler = (request, h) => {
        return h.view('404')
   }
+const loginHandler = async (request, h) => {
+  const userExist = await User.findOne({
+    where: {
+      email: request.payload.email,
+    },
+  })
+  if (!userExist) {
+    throw Boom.badRequest('Invalid credentials')
+  }
 
-module.exports = {
-  method: 'POST',
-  path: '/api/v1/auth/login',
-  config: {
-    auth: false,
-  },
-  handler: async (request, h) => {
-    const userExist = await User.findOne({
-      where: {
-        email: request.payload.email,
-      },
-    })
+  const passwordMatch = await bcrypt.compare(
+    request.payload.password,
+    userExist.password
+  )
 
-    if (!userExist) {
-      throw Boom.badRequest('Invalid credentials')
-    }
+  if (!passwordMatch) {
+    throw Boom.badRequest('Invalid credentials')
+  }
 
-    const passwordMatch = await bcrypt.compare(
-      request.payload.password,
-      userExist.password
-    )
-
-    if (!passwordMatch) {
-      throw Boom.badRequest('Invalid credentials')
-    }
-
-    console.log(userExist)
-    const response = {
-      token: createToken({ id: userExist.id, email: userExist.email }),
-    }
-
-    return response
-  },
+  const response = {
+    token: createToken({ id: userExist.id, email: userExist.email }),
+  }
+  const result = {
+    message: 'Login successful',
+    token: response.token,
+  };
+  console.log(result)
+  return result;
 }
 
-module.exports = [{
+module.exports = [
+  {
+    method: 'POST',
+    path: '/api/v1/auth/login',
+    config: {
+      auth: false,
+    },
+    handler: loginHandler
+  }, {
   method: 'GET',
   path: '/login',
   config: {
     auth: false,
   },
-  handler:  loginHandler
+  handler:  loginHandlerView
 },
 {
   method: 'GET',

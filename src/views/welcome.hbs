@@ -47,9 +47,34 @@ button {
     }   
 </style>   
 </head>    
-<body>    
+<body>
+    <input type="hidden" name="token" value="{{token}}">
     <center> <h1> Address Book </h1> </center>   
-    <center> <h3> welcome {{response}} </h3> </center>
-      
+    <center> <h3> welcome {{ token }} </h3> </center>
+    <a id="logout">Logout</a> 
+    <script>
+    const action = document.getElementById('logout');
+    action.addEventListener('click', ()=>{fetch('/logout', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  credentials: 'same-origin'
+})
+.then(response => {
+  if (response.ok) {
+    sessionStorage.removeItem('token');  // Remove token from session storage
+    window.location.href = '/login';  // Redirect to login page
+  } else {
+    throw new Error('Logout failed.');
+  }
+})
+.catch(error => {
+  console.error(error);
+});
+    });
+
+    </script>
 </body>     
 </html>

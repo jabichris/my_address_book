@@ -3,6 +3,8 @@
 <head>  
 <meta name="viewport" content="width=device-width, initial-scale=1">  
 <title> Address Book </title>  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.0/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.0/dist/sweetalert2.all.min.js"></script>
 <style>   
 Body {  
   font-family: Calibri, Helvetica, sans-serif;  
@@ -50,32 +52,70 @@ button {
 <body>    
     <center> <h1> Address Book </h1> </center>   
     <center> <h3> Register here </h3> </center>
-    <form action="register-form" method="POST">  
+    <form action="register-form" method="POST" id="register">  
         <div class="container">   
             <label>Email : </label>   
-            <input type="text" placeholder="Enter your email" name="your email" required>  
+            <input type="text" placeholder="Enter your email" name="email" required>  
             <label>First Name : </label>   
-            <input type="text" placeholder="Enter your firstname" name="your firstname" required>
+            <input type="text" placeholder="Enter your firstname" name="firstName" required>
             <label>Last Name : </label>   
-            <input type="text" placeholder="Enter your lastname" name="your lastname" required>  
+            <input type="text" placeholder="Enter your lastname" name="lastName" required>  
             <label>Password : </label>   
-            <input type="password" placeholder="Enter Password" name="password" required>  
+            <input type="password" placeholder="Enter Password" name="password" id="password" required>  
             <button type="submit">Register</button>   
-            <input type="checkbox" onclick="myFunction()">Show Password 
+            <input type="checkbox" onclick="viewPassword()" id="myInput">Show Password 
             <button type="button" class="cancelbtn"> Cancel</button>   
             Have an account? <a href="/login"> login here </a>   
         </div>   
     </form> 
-<script>
-function myFunction() {
-  var x = document.getElementById("myInput");
+    <script>
+const viewPassword = () => {
+  var x = document.getElementById("password");
   if (x.type === "password") {
     x.type = "text";
   } else {
     x.type = "password";
   }
 }
+document.querySelector('#register').addEventListener('submit', (event) => {
+  event.preventDefault();
 
-</script>    
-</body>     
+  const formData = new FormData(event.target);
+  const formDataJson = JSON.stringify(Object.fromEntries(formData.entries())); // convert the FormData to a JSON object
+
+  // Use an AJAX request to send the form data to the Hapi.js server
+  fetch('/api/v1/users/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json' // set the Content-Type header to application/json
+    },
+    body: formDataJson
+  }).then((response) => {
+    if (response.ok) {
+      // Handle successful response
+      window.location = '/welcome'
+     return Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'You registered  successful!'
+       
+    });
+    } else {
+      return Swal.fire({
+      icon: 'warning',
+      title: 'Failure!',
+      text: `Your request failed due to ${response.statusText}!`
+    });
+    }
+  }).catch((error) => {
+  return Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: 'There was an error with your request.'
+    });    
+  });
+});
+</script>   
+</body> 
+
 </html>
