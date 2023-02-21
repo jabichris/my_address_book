@@ -1,9 +1,11 @@
 {
     "extends": [
-      "prettier"
-    ],
+      "prettier",
+      "eslint:recommended"
+     ],
     "plugins": [
-      "prettier"
+      "prettier",
+      "handlebars"
     ],
     "parserOptions": {
       "ecmaVersion": 2017,
@@ -14,9 +16,18 @@
       "es6": true,
       "jest": true
     },
+    "settings": {
+      "import/resolver": {
+        "node": {
+          "extensions": [".js", ".jsx", ".json"],
+          "moduleDirectory": ["node_modules", "src"]
+        }
+      }
+    },
     "rules": {
       "space-before-function-paren": 0,
       "new-cap": 0,
-      "prettier/prettier": 2
+      "prettier/prettier": 2,
+      "import/no-unresolved": [2, { "commonjs": true }]
     }
   }

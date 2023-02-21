@@ -1,0 +1,8 @@
+DB_USERNAME=your database username
+DB_PASSWORD=your database password
+DB_NAME=your database
+DB_HOST=your db server ip address
+DIALECT=your db of preference(mine is sql)
+HOST=your app server ip address
+PORT=your port
+SECRET=your secret word of choice

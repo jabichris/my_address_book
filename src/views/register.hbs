@@ -1,0 +1,121 @@
+<!DOCTYPE html>   
+<html>   
+<head>  
+<meta name="viewport" content="width=device-width, initial-scale=1">  
+<title> Address Book </title>  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.0/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.0/dist/sweetalert2.all.min.js"></script>
+<style>   
+Body {  
+  font-family: Calibri, Helvetica, sans-serif;  
+  background-color: #0083cb;  
+  color: white;
+}  
+button {   
+       background-color: lightblue;   
+       width: 100%;  
+        color: white;   
+        padding: 15px;   
+        margin: 10px 0px;   
+        border: none;   
+        cursor: pointer;   
+         }   
+ form {   
+        border: 3px solid #f1f1f1;
+        width: 60%; 
+        margin: auto;
+    }   
+ input[type=text], input[type=password] {   
+        width: 100%;   
+        margin: 8px 0;  
+        padding: 12px 20px;   
+        display: inline-block;   
+        border: 2px solid lightblue;   
+        box-sizing: border-box;   
+    }  
+ button:hover {   
+        opacity: 0.7;   
+    }   
+  .cancelbtn {   
+        width: auto;   
+        padding: 10px 18px;  
+        margin: 10px 5px;  
+    }   
+        
+     
+ .container {   
+        padding: 25px;   
+        background-color: #0083cb
+    }   
+</style>   
+</head>    
+<body>    
+    <center> <h1> Address Book </h1> </center>   
+    <center> <h3> Register here </h3> </center>
+    <form action="register-form" method="POST" id="register">  
+        <div class="container">   
+            <label>Email : </label>   
+            <input type="text" placeholder="Enter your email" name="email" required>  
+            <label>First Name : </label>   
+            <input type="text" placeholder="Enter your firstname" name="firstName" required>
+            <label>Last Name : </label>   
+            <input type="text" placeholder="Enter your lastname" name="lastName" required>  
+            <label>Password : </label>   
+            <input type="password" placeholder="Enter Password" name="password" id="password" required>  
+            <button type="submit">Register</button>   
+            <input type="checkbox" onclick="viewPassword()" id="myInput">Show Password 
+            <button type="button" class="cancelbtn"> Cancel</button>   
+            Have an account? <a href="/login"> login here </a>   
+        </div>   
+    </form> 
+    <script>
+const viewPassword = () => {
+  var x = document.getElementById("password");
+  if (x.type === "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+}
+document.querySelector('#register').addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(event.target);
+  const formDataJson = JSON.stringify(Object.fromEntries(formData.entries())); // convert the FormData to a JSON object
+
+  // Use an AJAX request to send the form data to the Hapi.js server
+  fetch('/api/v1/users/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json' // set the Content-Type header to application/json
+    },
+    body: formDataJson
+  }).then((response) => {
+    if (response.ok) {
+      // Handle successful response
+      window.location = '/welcome'
+     return Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'You registered  successful!'
+       
+    });
+    } else {
+      return Swal.fire({
+      icon: 'warning',
+      title: 'Failure!',
+      text: `Your request failed due to ${response.statusText}!`
+    });
+    }
+  }).catch((error) => {
+  return Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: 'There was an error with your request.'
+    });    
+  });
+});
+</script>   
+</body> 
+
+</html>
